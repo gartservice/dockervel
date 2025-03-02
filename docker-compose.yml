@@ -1,0 +1,68 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8
+    container_name: mysql-server
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: secret
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - backend
+
+  site1:
+    image: my-laravel-app:php81
+    container_name: site1
+    build:
+      context: ./site1
+      dockerfile: Dockerfile
+    environment:
+      DB_HOST: mysql
+      DB_DATABASE: site1_db
+      DB_USERNAME: root
+      DB_PASSWORD: secret
+    depends_on:
+      - mysql
+    networks:
+      - backend
+      - frontend
+
+  site2:
+    image: my-laravel-app:php82
+    container_name: site2
+    build:
+      context: ./site2
+      dockerfile: Dockerfile
+    environment:
+      DB_HOST: mysql
+      DB_DATABASE: site2_db
+      DB_USERNAME: root
+      DB_PASSWORD: secret
+    depends_on:
+      - mysql
+    networks:
+      - backend
+      - frontend
+
+  nginx:
+    image: nginx:latest
+    container_name: nginx-proxy
+    restart: always
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d
+    ports:
+      - "80:80"
+    depends_on:
+      - site1
+      - site2
+    networks:
+      - frontend
+
+volumes:
+  mysql_data:
+
+networks:
+  backend:
+  frontend:
