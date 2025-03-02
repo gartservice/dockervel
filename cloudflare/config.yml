@@ -1,0 +1,10 @@
+tunnel: <TUNNEL_ID>
+credentials-file: /root/.cloudflared/<TUNNEL_ID>.json
+ingress:
+  - hostname: site1.example.com
+    service: http://nginx-proxy:80
+  - hostname: site2.example.com
+    service: http://nginx-proxy:80
+  - hostname: ssh.example.com
+    service: ssh://localhost:22
+  - service: http_status:404
