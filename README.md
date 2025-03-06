@@ -1,5 +1,5 @@
-Project structure
-
+# Progect structure
+```
 project-root/
 ├── sites/                  # Directory containing Laravel projects
 │   ├── site1/              # Laravel application 1
@@ -22,3 +22,10 @@ project-root/
 ├── .env                    # Global environment variables for the project
 ├── README.md               # Project description and setup instructions
 └── LICENSE                 # Project license file (e.g., MIT, Apache 2.0)
+```
+
+##  Install new project
+```
+docker run --rm -v $(pwd):/app -w /app -u $(id -u):$(id -g) composer create-project --prefer-dist laravel/laravel site1
+```
+- change site1 to your app name
