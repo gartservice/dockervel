@@ -9,21 +9,55 @@ services:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
     volumes:
       - mysql_data:/var/lib/mysql
+      - ./docker/mysql/init.sql:/docker-entrypoint-initdb.d/init.sql # Mount init script      
+      - ./docker/mysql/init.sh:/init.sh # Mount init.sh script    
+
+    # command: ["/bin/bash", "init.sh"]
     networks:
       - ${BACKEND_NETWORK}
 
   site1:
     build:
-      context: ./sites/site1
-      dockerfile: ../../docker/php/Dockerfile
-    container_name: site1
+      # context: ./sites/site1
+      context: .
+      dockerfile: ./docker/php/Dockerfile
+      args:
+        - PHP_VERSION=8.4
+        - APP_NAME=site1
+    container_name: site1    
     environment:
+      APP_NAME: site1
       DB_HOST: mysql
       DB_DATABASE: site1_db
       DB_USERNAME: ${MYSQL_USER}
       DB_PASSWORD: ${MYSQL_PASSWORD}
     depends_on:
       - mysql
+    volumes:
+      - ./sites/site1:/var/www/html/site1
+    networks:
+      - ${BACKEND_NETWORK}
+      - ${FRONTEND_NETWORK}
+    # command: sh -c "php artisan migrate --force && php-fpm"
+  site2:
+    build:
+      # context: ./sites/site2
+      context: .
+      dockerfile: ./docker/php/Dockerfile
+      args:
+        - PHP_VERSION=8.4
+        - APP_NAME=site2
+    container_name: site2
+    environment:
+      APP_NAME: site2
+      DB_HOST: mysql
+      DB_DATABASE: site2_db
+      DB_USERNAME: ${MYSQL_USER}
+      DB_PASSWORD: ${MYSQL_PASSWORD}
+    depends_on:
+      - mysql
+    volumes:
+      - ./sites/site2:/var/www/html/site2      
     networks:
       - ${BACKEND_NETWORK}
       - ${FRONTEND_NETWORK}
@@ -34,10 +68,13 @@ services:
     restart: always
     volumes:
       - ./docker/nginx/conf.d:/etc/nginx/conf.d
+      - ./sites/site1:/var/www/html/site1
+      - ./sites/site2:/var/www/html/site2
     ports:
       - "${NGINX_PORT}:80"
     depends_on:
       - site1
+      - site2
     networks:
       - ${FRONTEND_NETWORK}
 
