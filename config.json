@@ -1,0 +1,25 @@
+{    
+    "databases": ["site1_db", "site2_db", "test_db", "test_db2"],    
+    "nginex": {
+        "sites": ["site1", "site2", "test", "test2"]
+    },
+    "php": {
+        "sites": {
+            "site1": {
+                "php_version": "8.2"
+            },
+            "site2": {
+                "php_version": "8.3"
+            },
+            "test": {
+                "php_version": "7.4"
+            },
+            "test2": {
+                "php_version": "7.4"
+            }
+        }
+
+    }
+
+}
+  
