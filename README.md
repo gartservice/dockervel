@@ -29,3 +29,40 @@ project-root/
 docker run --rm -v $(pwd):/app -w /app -u $(id -u):$(id -g) composer create-project --prefer-dist laravel/laravel site1
 ```
 - change site1 to your app name
+
+## run containers
+```
+docker-compose up -d --build
+```
+## check containers status
+```
+docker ps
+```
+
+## stop conteiners
+```
+docker-compose down
+```
+## check docker logs for container
+```
+docker logs site1
+```
+## open bash inside container  
+```
+docker exec -it site1 bash
+```
+
+## manual databases initialization
+```
+docker exec -it mysql-server bash /init.sh
+```
+
+## 
+```
+
+```
+
+## 
+```
+
+```
