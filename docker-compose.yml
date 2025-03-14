@@ -2,19 +2,21 @@ version: '3.8'
 
 services:
   mysql:
-    image: mysql:8
+    # image: mariadb:10.6
+    build:
+      context: ./docker/mysql  
+      dockerfile: Dockerfile # Build the image from your custom Dockerfile
     container_name: mysql-server
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
     volumes:
       - mysql_data:/var/lib/mysql
-      - ./docker/mysql/init.sql:/docker-entrypoint-initdb.d/init.sql # Mount init script      
-      - ./docker/mysql/init.sh:/init.sh # Mount init.sh script    
-
-    # command: ["/bin/bash", "init.sh"]
+      - ./docker/mysql/init.sql:/docker-entrypoint-initdb.d/init.sql  # MySQL initialization script
+      - ./docker/mysql/init.sh:/init.sh  # Custom init script
+      - ./config.json:/config.json  # Custom init script
     networks:
-      - ${BACKEND_NETWORK}
+    - ${BACKEND_NETWORK}
 
   site1:
     build:
