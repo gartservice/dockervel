@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # List of required applications
-REQUIRED_APPS=("curl" "wget" "git" "docker" "docker-compose" "ufw" "jq")
+REQUIRED_APPS=("curl" "wget" "git" "docker" "docker-compose" "ufw" "jq" "fzf")
 
 # Function to check if a package is installed
 check_installed() {
@@ -54,19 +54,27 @@ show_header() {
     echo -e "\033[1;36m==============================\033[0m"
 }
 
-# Main menu
-while true; do
-    clear
-    show_header
-    echo -e "\n\033[1;33m 1) Check required applications\033[0m"
-    echo -e "\033[1;33m 2) Install missing applications\033[0m"
-    echo -e "\033[1;33m 3) Exit\033[0m"
-    echo -ne "\n\033[1;32mChoose an option: \033[0m"
-    read -r choice
-    case $choice in
-        1) check_all_apps; read -p "Press Enter to continue..." ;;
-        2) install_missing_apps; read -p "Press Enter to continue..." ;;
-        3) exit 0 ;;
-        *) echo -e "\033[1;31mInvalid option. Try again.\033[0m" ;;
-    esac
-done
+# Function to show interactive menu
+show_menu() {
+    options=("Check required applications" "Install missing applications" "Exit")
+    while true; do
+        clear
+        show_header
+        echo -e "\n\033[1;33mUse arrow keys to navigate and Enter to select:\033[0m"
+        choice=$(printf "%s\n" "${options[@]}" | fzf --height=10 --reverse --border)
+        case "$choice" in
+            "Check required applications") check_all_apps; read -p "Press Enter to continue..." ;;
+            "Install missing applications") install_missing_apps; read -p "Press Enter to continue..." ;;
+            "Exit") exit 0 ;;
+        esac
+    done
+}
+
+# Ensure fzf is installed
+if ! command -v fzf &> /dev/null; then
+    echo -e "\n\033[1;31mfzf is required for interactive menu. Installing...\033[0m"
+    sudo apt update && sudo apt install -y fzf
+fi
+
+# Start interactive menu
+show_menu
