@@ -2,7 +2,7 @@
 
 echo "Waiting for MySQL to be ready..."
 until mysqladmin ping -h mysql --silent; do
-    sleep 2
+    sleep 1
 done
 
 echo "MySQL is up! Running migrations..."

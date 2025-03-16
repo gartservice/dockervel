@@ -19,7 +19,7 @@
                 "name": "site1",
                 "root": "site1",
                 "server_name": "site1.local",
-                "db_name": "site1",
+                "db_name": "site1_db",
                 "db_user": "root",
                 "db_password": "secret",
                 "php_version": "8.4"
@@ -28,7 +28,7 @@
                 "name": "site2",
                 "root": "site2",
                 "server_name": "site2.local",
-                "db_name": "site2",
+                "db_name": "site2_db",
                 "db_user": "root",
                 "db_password": "secret",
                 "php_version": "8.4"

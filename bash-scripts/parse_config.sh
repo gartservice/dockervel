@@ -31,24 +31,24 @@ CLOUDFLARE_API_KEY=$(jq -r '.local_settings.cloudflare.api_key' "$CONFIG_FILE")
 CLOUDFLARE_ZONE_ID=$(jq -r '.local_settings.cloudflare.zone_id' "$CONFIG_FILE")
 
 # Extract and loop through sites
-echo -e "\n\033[1;34mConfigured Sites:\033[0m"
-jq -c '.docker_settings.sites[]' "$CONFIG_FILE" | while read -r site; do
-    SITE_NAME=$(echo "$site" | jq -r '.name')
-    ROOT_PATH=$(echo "$site" | jq -r '.root')
-    SERVER_NAME=$(echo "$site" | jq -r '.server_name')
-    DB_NAME=$(echo "$site" | jq -r '.db_name')
-    DB_USER=$(echo "$site" | jq -r '.db_user')
-    DB_PASSWORD=$(echo "$site" | jq -r '.db_password')
-    PHP_VERSION=$(echo "$site" | jq -r '.php_version')
+# echo -e "\n\033[1;34mConfigured Sites:\033[0m"
+# jq -c '.docker_settings.sites[]' "$CONFIG_FILE" | while read -r site; do
+#     SITE_NAME=$(echo "$site" | jq -r '.name')
+#     ROOT_PATH=$(echo "$site" | jq -r '.root')
+#     SERVER_NAME=$(echo "$site" | jq -r '.server_name')
+#     DB_NAME=$(echo "$site" | jq -r '.db_name')
+#     DB_USER=$(echo "$site" | jq -r '.db_user')
+#     DB_PASSWORD=$(echo "$site" | jq -r '.db_password')
+#     PHP_VERSION=$(echo "$site" | jq -r '.php_version')
 
-    echo -e "\033[1;33m- $SITE_NAME\033[0m (Server: $SERVER_NAME, DB: $DB_NAME, PHP: $PHP_VERSION)"
-done
+#     echo -e "\033[1;33m- $SITE_NAME\033[0m (Server: $SERVER_NAME, DB: $DB_NAME, PHP: $PHP_VERSION)"
+# done
 
 # Extract available commands
-echo -e "\n\033[1;34mAvailable Commands:\033[0m"
-jq -r '.local_settings.available_commands | to_entries[] | "\(.key): \(.value[0])"' "$CONFIG_FILE"
+# echo -e "\n\033[1;34mAvailable Commands:\033[0m"
+# jq -r '.local_settings.available_commands | to_entries[] | "\(.key): \(.value[0])"' "$CONFIG_FILE"
 
 # Example of running one of the commands
-echo -e "\n\033[1;32mRunning database migration:\033[0m"
-COMMAND_TO_RUN=$(jq -r '.local_settings.available_commands["run migrations"][0]' "$CONFIG_FILE")
-eval "$COMMAND_TO_RUN"
+# echo -e "\n\033[1;32mRunning database migration:\033[0m"
+# COMMAND_TO_RUN=$(jq -r '.local_settings.available_commands["run migrations"][0]' "$CONFIG_FILE")
+# eval "$COMMAND_TO_RUN"
