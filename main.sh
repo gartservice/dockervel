@@ -7,13 +7,14 @@ source "./bash-scripts/run_migrations.sh"
 source "./bash-scripts/initialize_database.sh"
 source "./bash-scripts/check_required_apps.sh"
 source "./bash-scripts/generate_env.sh"
+source "./bash-scripts/add_site.sh"
 
 # Ensure fzf is installed
 ensure_fzf_installed
 
 # Function to show the main menu
 show_menu() {
-    options=("Build Docker Containers" "Init databases" "Run Migrations" "Check Required Applications" "Generate .env File" "Exit")
+    options=("Add New Site" "Build Docker Containers" "Init databases" "Run Migrations" "Check Required Applications" "Generate .env File" "Exit")
     while true; do
         clear
         echo -e "\n\033[1;36m================================\033[0m"
@@ -21,9 +22,10 @@ show_menu() {
         echo -e "\033[1;36m================================\033[0m"
         echo -e "\n\033[1;33mUse arrow keys to navigate and Enter to select:\033[0m"
 
-        choice=$(printf "%s\n" "${options[@]}" | fzf --height=10 --reverse --border)
+        choice=$(printf "%s\n" "${options[@]}" | fzf --height=80% --reverse --border=sharp)
 
         case "$choice" in
+            "Add New Site") add_new_site; read -p "Press Enter to continue..." ;;
             "Build Docker Containers") build_docker_containers; read -p "Press Enter to continue..." ;;
             "Init databases") initialize_database; read -p "Press Enter to continue..." ;;
             "Run Migrations") run_migrations; read -p "Press Enter to continue..." ;;
