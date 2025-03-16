@@ -6,7 +6,7 @@ echo "Checking and creating databases if needed..."
 CONFIG_FILE="/config.json"
 
 # Read databases array from JSON and store it in a Bash array
-DATABASES=($(jq -r '.databases[]' "$CONFIG_FILE"))
+DATABASES=($(jq -r '.docker_settings.sites[].db_name' "$CONFIG_FILE"))
 
 DB_HOST="mysql"
 DB_USER="root"
