@@ -8,6 +8,8 @@ if [ ! -f "$CONFIG_FILE" ]; then
     exit 1
 fi
 
+# project locations
+SITES_FOLDER=$(jq -r '.local_settings.sites_folder' "$CONFIG_FILE")
 # Extract MySQL settings
 MYSQL_CONTAINER=$(jq -r '.docker_settings.mysql.container_name' "$CONFIG_FILE")
 MYSQL_ROOT_PASSWORD=$(jq -r '.docker_settings.mysql.root_password' "$CONFIG_FILE")
