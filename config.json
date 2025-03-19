@@ -55,7 +55,7 @@
         ]       
     },
     "local_settings": {
-        "sites_folder": "/sites",
+        "sites_folder": "./sites",
         "host": "",
         "port": 80,
         "ssh": {
