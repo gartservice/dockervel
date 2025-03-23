@@ -3,6 +3,42 @@
 CONFIG_FILE="./config.json"
 SITES_FOLDER=$(jq -r '.local_settings.sites_folder' "$CONFIG_FILE")
 
+
+# Function to check if the site already exists in config.json
+site_exists() {
+    jq -e --arg name "$1" '.docker_settings.sites[] | select(.name == $name)' "$CONFIG_FILE" >/dev/null
+}
+
+# Function to check if the folder already exists
+folder_exists() {
+    [[ -d "$SITES_FOLDER/$1" ]]
+}
+# Function to ensure required input and check for duplicate site names
+prompt_site_name() {
+    while true; do
+        read -p "Enter site name: " SITE_NAME
+        if [[ -z "$SITE_NAME" ]]; then
+            echo -e "\033[1;31mSite name cannot be empty!\033[0m"
+            continue
+        fi
+        if ! validate_folder_name "$SITE_NAME"; then
+            continue
+        fi
+        if site_exists "$SITE_NAME"; then
+            echo -e "\033[1;31mError: A site with the name '$SITE_NAME' already exists. Please choose a different name.\033[0m"
+
+            continue
+        fi
+        if folder_exists "$SITE_NAME"; then
+            echo -e "\033[1;31mError: A folder with the name '$SITE_NAME' already exists in '$SITES_FOLDER'. Please choose a different name.\033[0m"
+            continue
+        fi
+        break
+    done
+}
+ 
+
+
 # Function to validate folder names (allow letters, numbers, dashes, and underscores)
 validate_folder_name() {
     if [[ ! "$1" =~ ^[a-zA-Z0-9_-]+$ ]]; then
@@ -12,7 +48,7 @@ validate_folder_name() {
     return 0
 }
 
-# Function to ensure required input
+# Function to prompt other inputs
 prompt_input() {
     local prompt_message=$1
     local var_name=$2
@@ -21,12 +57,6 @@ prompt_input() {
     while true; do
         read -p "$prompt_message [$default_value]: " input_value
         input_value=${input_value:-$default_value}
-
-        # If this is SITE_NAME, validate it
-        if [[ "$var_name" == "SITE_NAME" ]]; then
-            validate_folder_name "$input_value" || continue
-        fi
-        
         eval "$var_name='$input_value'"
         break
     done
@@ -41,7 +71,8 @@ add_new_site() {
         echo -e "\033[1;36m====================================\033[0m"
         echo -e "\n\033[1;33mUse arrow keys to navigate and Enter to select:\033[0m"
 
-        prompt_input "Enter site name" SITE_NAME ""
+        # Ensure unique site name
+        prompt_site_name
         prompt_input "Enter site DNS (e.g., site.local)" SITE_DNS "${SITE_NAME}.local"
         prompt_input "Enter database name" DB_NAME "${SITE_NAME}_db"
         prompt_input "Enter database user" DB_USER "root"
@@ -63,6 +94,9 @@ add_new_site() {
         else
             echo -e "\n\033[1;33mSite folder already exists: $SITE_PATH\033[0m"
         fi
+
+        # Call external script to update config.json
+        ./bash-scripts/add_site_to_config_file.sh "$SITE_NAME" "$SITE_PATH" "$SITE_DNS" "$DB_NAME" "$DB_USER" "$DB_PASSWORD" "$PHP_VERSION"
 
         # Select installation type using fzf
         INSTALL_TYPE=$(printf "Laravel\nWordPress\nExisting Project (GitHub)" | fzf --height=10 --reverse --border --prompt "Choose installation type: ")
