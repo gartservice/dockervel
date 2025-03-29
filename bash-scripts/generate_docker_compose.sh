@@ -1,12 +1,12 @@
 #!/bin/bash
 
-CONFIG_FILE="./config.json"
-COMPOSE_FILE="./docker-compose.yml"
+CONFIG_FILE="/config.json"
+COMPOSE_FILE="/docker-compose.yml"
 
 generate_compose_file() {
     echo -e "\n\033[1;33mGenerating docker-compose.yml...\033[0m"
 
-    # Начало compose-файла
+    # start write to the docker-compose file
     cat > "$COMPOSE_FILE" <<EOF
 version: '3.8'
 
@@ -28,7 +28,7 @@ services:
       - \${BACKEND_NETWORK}
 EOF
 
-    # Добавление каждого сайта
+    # add sites to compose file
     jq -c '.docker_settings.sites[]' "$CONFIG_FILE" | while read -r site; do
         NAME=$(echo "$site" | jq -r '.name')
         ROOT=$(echo "$site" | jq -r '.root')
@@ -61,7 +61,7 @@ EOF
 EOF
     done
 
-    # nginx сервис
+    # nginx service
     cat >> "$COMPOSE_FILE" <<EOF
 
   nginx:
@@ -72,7 +72,7 @@ EOF
       - ./docker/nginx/conf.d:/etc/nginx/conf.d
 EOF
 
-    # Монтируем все папки сайтов в nginx
+    # mounting sites to the nginx container
     jq -r '.docker_settings.sites[].root' "$CONFIG_FILE" | while read -r root; do
         echo "      - ./sites/$root:/var/www/html/$root" >> "$COMPOSE_FILE"
     done
@@ -83,7 +83,7 @@ EOF
     depends_on:
 EOF
 
-    # nginx должен зависеть от всех сайтов
+    # nginx depends on sites
     jq -r '.docker_settings.sites[].name' "$CONFIG_FILE" | while read -r name; do
         echo "      - $name" >> "$COMPOSE_FILE"
     done
@@ -103,4 +103,4 @@ EOF
     echo -e "\n\033[1;32mdocker-compose.yml successfully generated!\033[0m"
 }
 
-generate_compose_file
+
