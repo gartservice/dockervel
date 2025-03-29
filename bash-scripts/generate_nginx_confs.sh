@@ -70,4 +70,4 @@ EOF
     done
 }
 
-generate_nginx_confs
+
