@@ -1,7 +1,7 @@
 #!/bin/bash
 
 CONFIG_FILE="./config.json"
-ENV_FILE="./.env"
+ENV_FILE=".env"
 
 generate_env_file() {
     echo -e "\n\033[1;33mGenerating .env file from config.json...\033[0m"
