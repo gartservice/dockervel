@@ -1,104 +1,119 @@
 {
-    "docker_settings": {
-        "mysql": {
-            "container_name": "mysql-server",
-            "root_password": "secret"
-        },
-        "nginx": {
-            "container_name": "nginx",
-            "http_port": 80,
-            "https_port": 443,
-            "ssl": {
-                "cert": "certs/localhost.crt",
-                "key": "certs/localhost.key"
-            }
-           
-        },
-        "sites": [
-            {
-                "name": "site1",
-                "root": "site1",
-                "server_name": "site1.local",
-                "db_name": "site1_db",
-                "db_user": "root",
-                "db_password": "secret",
-                "php_version": "8.4"
-            },
-            {
-                "name": "site2",
-                "root": "site2",
-                "server_name": "site2.local",
-                "db_name": "site2_db",
-                "db_user": "root",
-                "db_password": "secret",
-                "php_version": "8.4"
-            },
-            {
-                "name": "test",
-                "root": "test",
-                "server_name": "test.local",
-                "db_name": "test",
-                "db_user": "root",
-                "db_password": "secret",
-                "php_version": "8.4"
-
-            },
-            {
-                "name": "test2",
-                "root": "test2",
-                "server_name": "test2.local",
-                "db_name": "test2",
-                "db_user": "root",
-                "db_password": "secret",
-                "php_version": "8.4"
-            }
-        ]       
+  "docker_settings": {
+    "mysql": {
+      "container_name": "mysql-server",
+      "root_password": "secret"
     },
-    "local_settings": {
-        "sites_folder": "./sites",
-        "host": "",
-        "port": 80,
-        "ssh": {
-            "public_key": "ssh/id_rsa.pub"
-        },
-        "cloudflare": {
-            "email": "",
-            "api_key": "",
-            "zone_id": ""
-        },
-        "required_packages": [
-            "curl",
-            "wget",
-            "git",
-            "docker",
-            "docker-compose",
-            "ufw",
-            "jq",
-            "fzf",
-            "cloudflared"
-        ],
-        "available_php_versions": [
-            "7.4",
-            "8.0",
-            "8.1",
-            "8.2",
-            "8.3",
-            "8.4"
-        ],
-        "available_laravel_versions": [
-            10,
-            11,
-            12
-        ],
-
-        "available_commands": {
-            "run migrations": [
-                "docker exec -it mysql-server mysql -u root -p"                
-         
-            ],
-            "initialize all databases":[
-                "docker exec -it mysql-server bash -c ./init.sh"
-            ]
-        }        
+    "nginx": {
+      "container_name": "nginx",
+      "http_port": 80,
+      "https_port": 443,
+      "ssl": {
+        "cert": "certs/localhost.crt",
+        "key": "certs/localhost.key"
+      }
+    },
+    "networks": {
+      "backend_network": "backend",
+      "frontend_network": "frontend"
+    },
+    "sites": [
+      {
+        "name": "site1",
+        "root": "site1",
+        "server_name": "site1.local",
+        "db_name": "site1_db",
+        "db_user": "root",
+        "db_password": "secret",
+        "php_version": "8.4"
+      },
+      {
+        "name": "site2",
+        "root": "site2",
+        "server_name": "site2.local",
+        "db_name": "site2_db",
+        "db_user": "root",
+        "db_password": "secret",
+        "php_version": "8.4"
+      },
+      {
+        "name": "test",
+        "root": "test",
+        "server_name": "test.local",
+        "db_name": "test",
+        "db_user": "root",
+        "db_password": "secret",
+        "php_version": "8.4"
+      },
+      {
+        "name": "test2",
+        "root": "test2",
+        "server_name": "test2.local",
+        "db_name": "test2",
+        "db_user": "root",
+        "db_password": "secret",
+        "php_version": "8.4"
+      },
+      {
+        "name": "site8",
+        "root": "site8",
+        "server_name": "site8.local",
+        "db_name": "site8_db",
+        "db_user": "artem",
+        "db_password": "secret2",
+        "php_version": "8.3",
+        "public_folder": "public",
+        "ssl": {
+          "enabled": true,
+          "cert": "certs/site8.crt",
+          "key": "certs/site8.key"
+        }
+      }
+    ]
+  },
+  "local_settings": {
+    "sites_folder": "./sites",
+    "host": "",
+    "port": 80,
+    "ssh": {
+      "public_key": "ssh/id_rsa.pub"
+    },
+    "cloudflare": {
+      "email": "",
+      "api_key": "",
+      "zone_id": ""
+    },
+    "required_packages": [
+      "curl",
+      "wget",
+      "git",
+      "docker",
+      "docker-compose",
+      "ufw",
+      "jq",
+      "fzf",
+      "cloudflared"
+    ],
+    "available_php_versions": [
+      "7.4",
+      "8.0",
+      "8.1",
+      "8.2",
+      "8.3",
+      "8.4"
+    ],
+    "available_laravel_versions": [
+      10,
+      11,
+      12
+    ],
+    "available_commands": {
+      "run migrations": [
+        "docker exec -it mysql-server mysql -u root -p"
+      ],
+      "initialize all databases": [
+        "docker exec -it mysql-server bash -c ./init.sh"
+      ]
     }
+  }
 }
