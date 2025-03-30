@@ -1,7 +1,7 @@
 #!/bin/bash
 
-CONFIG_FILE="/config.json"
-COMPOSE_FILE="/docker-compose.yml"
+CONFIG_FILE="config.json"
+COMPOSE_FILE="docker-compose.yml"
 
 generate_compose_file() {
     echo -e "\n\033[1;33mGenerating docker-compose.yml...\033[0m"
