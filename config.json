@@ -53,20 +53,20 @@
         "db_user": "root",
         "db_password": "secret",
         "php_version": "8.4"
-      },
+      },     
       {
-        "name": "site8",
-        "root": "site8",
-        "server_name": "site8.local",
-        "db_name": "site8_db",
-        "db_user": "artem",
-        "db_password": "secret2",
-        "php_version": "8.3",
+        "name": "site10",
+        "root": "site10",
+        "server_name": "site10.local",
+        "db_name": "site10_db",
+        "db_user": "root",
+        "db_password": "secret",
+        "php_version": "8.4",
         "public_folder": "public",
         "ssl": {
-          "enabled": true,
-          "cert": "certs/site8.crt",
-          "key": "certs/site8.key"
+          "enabled": false,
+          "cert": "",
+          "key": ""
         }
       }
     ]
