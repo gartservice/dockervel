@@ -17,115 +17,7 @@ services:
     networks:
       - ${BACKEND_NETWORK}
 
-  site1:
-    build:
-      context: .
-      dockerfile: ./docker/php/Dockerfile
-      args:
-        - PHP_VERSION=8.4
-        - APP_NAME=site1
-    container_name: site1
-    environment:
-      APP_NAME: site1
-      DB_HOST: mysql
-      DB_DATABASE: ${SITE1_DB_NAME}
-      DB_USERNAME: ${SITE1_DB_USER}
-      DB_PASSWORD: ${SITE1_DB_PASSWORD}
-    depends_on:
-      - mysql
-    volumes:
-      - ./sites/site1:/var/www/html/site1
-    networks:
-      - ${BACKEND_NETWORK}
-      - ${FRONTEND_NETWORK}
-
-  site2:
-    build:
-      context: .
-      dockerfile: ./docker/php/Dockerfile
-      args:
-        - PHP_VERSION=8.4
-        - APP_NAME=site2
-    container_name: site2
-    environment:
-      APP_NAME: site2
-      DB_HOST: mysql
-      DB_DATABASE: ${SITE2_DB_NAME}
-      DB_USERNAME: ${SITE2_DB_USER}
-      DB_PASSWORD: ${SITE2_DB_PASSWORD}
-    depends_on:
-      - mysql
-    volumes:
-      - ./sites/site2:/var/www/html/site2
-    networks:
-      - ${BACKEND_NETWORK}
-      - ${FRONTEND_NETWORK}
-
-  test:
-    build:
-      context: .
-      dockerfile: ./docker/php/Dockerfile
-      args:
-        - PHP_VERSION=8.4
-        - APP_NAME=test
-    container_name: test
-    environment:
-      APP_NAME: test
-      DB_HOST: mysql
-      DB_DATABASE: ${TEST_DB_NAME}
-      DB_USERNAME: ${TEST_DB_USER}
-      DB_PASSWORD: ${TEST_DB_PASSWORD}
-    depends_on:
-      - mysql
-    volumes:
-      - ./sites/test:/var/www/html/test
-    networks:
-      - ${BACKEND_NETWORK}
-      - ${FRONTEND_NETWORK}
-
-  test2:
-    build:
-      context: .
-      dockerfile: ./docker/php/Dockerfile
-      args:
-        - PHP_VERSION=8.4
-        - APP_NAME=test2
-    container_name: test2
-    environment:
-      APP_NAME: test2
-      DB_HOST: mysql
-      DB_DATABASE: ${TEST2_DB_NAME}
-      DB_USERNAME: ${TEST2_DB_USER}
-      DB_PASSWORD: ${TEST2_DB_PASSWORD}
-    depends_on:
-      - mysql
-    volumes:
-      - ./sites/test2:/var/www/html/test2
-    networks:
-      - ${BACKEND_NETWORK}
-      - ${FRONTEND_NETWORK}
-
-  site10:
-    build:
-      context: .
-      dockerfile: ./docker/php/Dockerfile
-      args:
-        - PHP_VERSION=8.4
-        - APP_NAME=site10
-    container_name: site10
-    environment:
-      APP_NAME: site10
-      DB_HOST: mysql
-      DB_DATABASE: ${SITE10_DB_NAME}
-      DB_USERNAME: ${SITE10_DB_USER}
-      DB_PASSWORD: ${SITE10_DB_PASSWORD}
-    depends_on:
-      - mysql
-    volumes:
-      - ./sites/site10:/var/www/html/site10
-    networks:
-      - ${BACKEND_NETWORK}
-      - ${FRONTEND_NETWORK}
+  
 
   nginx:
     image: nginx:latest
@@ -138,6 +30,8 @@ services:
       - ./sites/test:/var/www/html/test
       - ./sites/test2:/var/www/html/test2
       - ./sites/site10:/var/www/html/site10
+      - ./sites/site11:/var/www/html/site11
+      - ./sites/sitetest:/var/www/html/sitetest
     ports:
       - "${NGINX_HTTP_PORT}:80"
     depends_on:
@@ -146,6 +40,8 @@ services:
       - test
       - test2
       - site10
+      - site11
+      - sitetest
     networks:
       - ${FRONTEND_NETWORK}
 
