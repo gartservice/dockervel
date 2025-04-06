@@ -17,58 +17,7 @@
       "backend_network": "backend",
       "frontend_network": "frontend"
     },
-    "sites": [
-      {
-        "name": "site1",
-        "root": "site1",
-        "server_name": "site1.local",
-        "db_name": "site1_db",
-        "db_user": "root",
-        "db_password": "secret",
-        "php_version": "8.4"
-      },
-      {
-        "name": "site2",
-        "root": "site2",
-        "server_name": "site2.local",
-        "db_name": "site2_db",
-        "db_user": "root",
-        "db_password": "secret",
-        "php_version": "8.4"
-      },
-      {
-        "name": "test",
-        "root": "test",
-        "server_name": "test.local",
-        "db_name": "test",
-        "db_user": "root",
-        "db_password": "secret",
-        "php_version": "8.4"
-      },
-      {
-        "name": "test2",
-        "root": "test2",
-        "server_name": "test2.local",
-        "db_name": "test2",
-        "db_user": "root",
-        "db_password": "secret",
-        "php_version": "8.4"
-      },     
-      {
-        "name": "site10",
-        "root": "site10",
-        "server_name": "site10.local",
-        "db_name": "site10_db",
-        "db_user": "root",
-        "db_password": "secret",
-        "php_version": "8.4",
-        "public_folder": "public",
-        "ssl": {
-          "enabled": false,
-          "cert": "",
-          "key": ""
-        }
-      }
+    "sites": [     
     ]
   },
   "local_settings": {
