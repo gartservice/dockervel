@@ -17,7 +17,22 @@
       "backend_network": "backend",
       "frontend_network": "frontend"
     },
-    "sites": [     
+    "sites": [
+      {
+        "name": "test2",
+        "root": "test2",
+        "server_name": "test2.local",
+        "db_name": "test2_db",
+        "db_user": "root",
+        "db_password": "secret",
+        "php_version": "8.4",
+        "public_folder": "public",
+        "ssl": {
+          "enabled": false,
+          "cert": "",
+          "key": ""
+        }
+      }
     ]
   },
   "local_settings": {
