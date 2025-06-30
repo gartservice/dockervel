@@ -1,3 +1,12 @@
-/sites
+# Ignore generated site folders
+/sites/
+# Ignore generated SSL certificates
+/certs/
+# Ignore generated nginx config files
+/docker/nginx/conf.d/
+# Ignore generated environment and compose files
+.env
+docker-compose.yml
+# Ignore SSH keys
 ubuntu_home_server
 ubuntu_home_server.pub
