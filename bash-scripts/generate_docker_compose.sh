@@ -8,8 +8,6 @@ generate_compose_file() {
 
     # start write to the docker-compose file
     cat > "$COMPOSE_FILE" <<EOF
-version: '3.8'
-
 services:
   mysql:
     build:
@@ -24,6 +22,20 @@ services:
       - ./docker/mysql/init.sql:/docker-entrypoint-initdb.d/init.sql
       - ./docker/mysql/init.sh:/init.sh
       - ./config.json:/config.json
+    networks:
+      - \${BACKEND_NETWORK}
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin:latest
+    container_name: phpmyadmin
+    restart: always
+    ports:
+      - "8081:80"  
+    environment:
+      PMA_HOST: mysql-server
+      PMA_PORT: 3306
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+    depends_on:
+      - mysql
     networks:
       - \${BACKEND_NETWORK}
 EOF

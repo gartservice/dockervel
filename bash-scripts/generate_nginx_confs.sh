@@ -53,6 +53,14 @@ EOF
     location / {
         try_files \$uri \$uri/ /index.php?\$query_string;
     }
+    
+    location /storage/ {
+        alias /var/www/html/$ROOT/storage/app/public/;
+
+        access_log off;
+        expires max;
+    }
+
 
     location ~ \.php\$ {
         include fastcgi_params;
