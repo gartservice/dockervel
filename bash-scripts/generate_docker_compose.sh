@@ -23,7 +23,7 @@ services:
       - ./docker/mysql/init.sh:/init.sh
       - ./config.json:/config.json
     networks:
-      - \${BACKEND_NETWORK}
+      - backend
   phpmyadmin:
     image: phpmyadmin/phpmyadmin:latest
     container_name: phpmyadmin
@@ -37,7 +37,7 @@ services:
     depends_on:
       - mysql
     networks:
-      - \${BACKEND_NETWORK}
+      - backend
 EOF
 
     # add sites to compose file
@@ -68,8 +68,8 @@ EOF
     volumes:
       - ./sites/$ROOT:/var/www/html/$ROOT
     networks:
-      - \${BACKEND_NETWORK}
-      - \${FRONTEND_NETWORK}
+      - backend
+      - frontend
 EOF
     done
 
@@ -102,7 +102,7 @@ EOF
 
     cat >> "$COMPOSE_FILE" <<EOF
     networks:
-      - \${FRONTEND_NETWORK}
+      - frontend
 
 volumes:
   mysql_data:
@@ -115,4 +115,6 @@ EOF
     echo -e "\n\033[1;32mdocker-compose.yml successfully generated!\033[0m"
 }
 
-
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+    generate_compose_file "$@"
+fi

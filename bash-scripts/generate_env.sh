@@ -3,10 +3,15 @@
 CONFIG_FILE="./config.json"
 ENV_FILE=".env"
 
+FORCE=0
+if [[ "$1" == "--force" ]]; then
+    FORCE=1
+fi
+
 generate_env_file() {
     echo -e "\n\033[1;33mGenerating .env file from config.json...\033[0m"
 
-    if [ -f "$ENV_FILE" ]; then
+    if [ -f "$ENV_FILE" ] && [ "$FORCE" -eq 0 ]; then
         echo -ne "\033[1;31mWarning: .env file already exists. Overwrite? (y/n): \033[0m"; read CONFIRM
         if [[ "$CONFIRM" != "y" ]]; then
             echo -e "\n\033[1;33mOperation cancelled. .env file was not modified.\033[0m"
@@ -49,3 +54,7 @@ generate_env_file() {
 
     echo -e "\n\033[1;32m.env file created successfully!\033[0m"
 }
+
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+    generate_env_file "$@"
+fi

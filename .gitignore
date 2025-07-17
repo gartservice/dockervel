@@ -10,3 +10,4 @@ docker-compose.yml
 # Ignore SSH keys
 ubuntu_home_server
 ubuntu_home_server.pub
+config.json

@@ -78,4 +78,6 @@ EOF
     done
 }
 
-
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+    generate_nginx_confs "$@"
+fi

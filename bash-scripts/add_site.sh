@@ -153,5 +153,23 @@ add_new_site() {
     esac
 
     echo -e "\n\033[1;34mSite $SITE_NAME added successfully!\033[0m"
+
+    # --- AUTOMATION STARTS HERE ---
+    echo -e "\n\033[1;36m[Auto] Generating nginx config files...\033[0m"
+    ./bash-scripts/generate_nginx_confs.sh
+    echo -e "\033[1;36m[Auto] Generating .env file...\033[0m"
+    ./bash-scripts/generate_env.sh --force
+    echo -e "\033[1;36m[Auto] Generating docker-compose.yml...\033[0m"
+    ./bash-scripts/generate_docker_compose.sh
+    echo -e "\033[1;36m[Auto] Building and starting new PHP container: $SITE_NAME\033[0m"
+    docker-compose build $SITE_NAME
+    docker-compose up -d $SITE_NAME
+    echo -e "\033[1;36m[Auto] Restarting nginx container to reload configs...\033[0m"
+    docker-compose restart nginx
+    echo -e "\033[1;36m[Auto] Initializing database for new site...\033[0m"
+    source ./bash-scripts/initialize_database.sh
+    initialize_database
+    echo -e "\033[1;32m[Auto] Database initialization complete.\033[0m"
+    echo -e "\033[1;32m[Auto] Done! New site is live (if no errors above).\033[0m"
     read -p "Press Enter to return to the main menu..."
 }
