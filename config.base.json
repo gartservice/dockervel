@@ -1,0 +1,35 @@
+{
+  "docker_settings": {
+    "networks": {
+      "backend_network": "backend",
+      "frontend_network": "frontend"
+    },
+    "mysql": {
+      "container_name": "mysql",
+      "root_password": "secret"
+    },
+    "nginx": {
+      "container_name": "nginx",
+      "http_port": 80,
+      "https_port": 443,
+      "ssl": {
+        "cert": "certs/example.crt",
+        "key": "certs/example.key"
+      }
+    },
+    "sites": []
+  },
+  "local_settings": {
+    "sites_folder": "./sites",
+    "available_php_versions": ["8.4", "8.3", "8.2", "8.1", "8.0", "7.4"],
+    "available_laravel_versions": ["12.*", "11.*", "10.*", "9.*"],
+    "required_packages": [
+      "curl", "wget", "git", "docker", "docker-compose", "ufw", "jq", "fzf", "cloudflared"
+    ],
+    "cloudflare": {
+      "email": "your-email@example.com",
+      "api_key": "CHANGEME",
+      "zone_id": "CHANGEME"
+    }
+  }
+} 
