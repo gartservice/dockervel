@@ -161,6 +161,8 @@ add_new_site() {
     ./bash-scripts/generate_env.sh --force
     echo -e "\033[1;36m[Auto] Generating docker-compose.yml...\033[0m"
     ./bash-scripts/generate_docker_compose.sh
+    echo -e "\033[1;36m[Auto] Generating nginx config files...\033[0m"
+    ./bash-scripts/generate_nginx_confs.sh
     echo -e "\033[1;36m[Auto] Generating database config...\033[0m"
     ./bash-scripts/generate_database_config.sh --force
     echo -e "\033[1;36m[Auto] Checking PHP container for version $PHP_VERSION...\033[0m"

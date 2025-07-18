@@ -12,6 +12,7 @@ source "./bash-scripts/generate_docker_compose.sh"
 source "./bash-scripts/generate_nginx_confs.sh"
 source "./bash-scripts/generate_config.sh"
 source "./bash-scripts/generate_database_config.sh"
+source "./bash-scripts/delete_site.sh"
 
 # Ensure fzf is installed
 ensure_fzf_installed
@@ -19,6 +20,7 @@ ensure_fzf_installed
 # Function to show the main menu
 show_menu() {
     options=("Add New Site"
+     "Delete Existing Site"
      "Build Docker Containers"
      "Init databases"
      "Run Migrations"
@@ -40,6 +42,7 @@ show_menu() {
 
         case "$choice" in
             "Add New Site") add_new_site; read -p "Press Enter to continue..." ;;
+            "Delete Existing Site") delete_site_menu; read -p "Press Enter to continue..." ;;
             "Build Docker Containers") build_docker_containers; read -p "Press Enter to continue..." ;;
             "Init databases") initialize_database; read -p "Press Enter to continue..." ;;
             "Run Migrations") run_migrations; read -p "Press Enter to continue..." ;;
