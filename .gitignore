@@ -7,6 +7,8 @@
 # Ignore generated environment and compose files
 .env
 docker-compose.yml
+# Ignore generated database config (contains sensitive data)
+docker/mysql/database_config.json
 # Ignore SSH keys
 ubuntu_home_server
 ubuntu_home_server.pub
