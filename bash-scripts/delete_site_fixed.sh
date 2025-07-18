@@ -55,7 +55,7 @@ delete_ssl_certs() {
         rm -f "$ssl_key"
         echo -e "\033[1;34m[Delete] Removed SSL key: $ssl_key\033[0m"
     fi
-}
+
 # Function to delete database
 delete_database() {
     local site_name=$1

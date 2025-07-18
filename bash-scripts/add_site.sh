@@ -300,6 +300,16 @@ EOF
         fi
     fi
     
+    # Fix permissions for Laravel projects
+    if [[ "$INSTALL_TYPE" == "Laravel" ]] || ([[ "$INSTALL_TYPE" == "Existing Project (GitHub)" ]] && [[ -f "$SITE_PATH/artisan" ]]); then
+        echo -e "\033[1;36m[Auto] Fixing Laravel permissions...\033[0m"
+        if ./bash-scripts/fix_permissions.sh --site "$SITE_NAME" --path "$SITE_PATH"; then
+            echo -e "\033[1;32m[Auto] ✓ Permissions fixed successfully\033[0m"
+        else
+            echo -e "\033[1;33m[Auto] Warning: Permission fixing failed. You may need to fix them manually.\033[0m"
+        fi
+    fi
+    
     echo -e "\033[1;32m[Auto] Done! New site is live (if no errors above).\033[0m"
     read -p "Press Enter to return to the main menu..."
 }
