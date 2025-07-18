@@ -20,6 +20,10 @@ if [ ! -f "$CONFIG_FILE" ]; then
     exit 1
 fi
 
+# Calculate PHP container name and project path
+PHP_CONTAINER="php-${PHP_VERSION//./}"
+PROJECT_PATH="/var/www/html/$SITE_NAME"
+
 # Create a new JSON entry for the site
 NEW_SITE=$(jq -n \
     --arg name "$SITE_NAME" \
@@ -33,6 +37,8 @@ NEW_SITE=$(jq -n \
     --arg ssl_cert "$SSL_CERT" \
     --arg ssl_key "$SSL_KEY" \
     --argjson ssl_enabled "$SSL_ENABLED" \
+    --arg php_container "$PHP_CONTAINER" \
+    --arg project_path "$PROJECT_PATH" \
     '{
         name: $name,
         root: $root,
@@ -42,6 +48,8 @@ NEW_SITE=$(jq -n \
         db_password: $db_password,
         php_version: $php_version,
         public_folder: $public_folder,
+        php_container: $php_container,
+        project_path: $project_path,
         ssl: {
             enabled: $ssl_enabled,
             cert: $ssl_cert,

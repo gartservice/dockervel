@@ -154,16 +154,31 @@ add_new_site() {
 
     echo -e "\n\033[1;34mSite $SITE_NAME added successfully!\033[0m"
 
-    # --- AUTOMATION STARTS HERE ---
-    echo -e "\n\033[1;36m[Auto] Generating nginx config files...\033[0m"
-    ./bash-scripts/generate_nginx_confs.sh
+    # --- AUTOMATION STARTS HERE ---    
     echo -e "\033[1;36m[Auto] Generating .env file...\033[0m"
     ./bash-scripts/generate_env.sh --force
     echo -e "\033[1;36m[Auto] Generating docker-compose.yml...\033[0m"
     ./bash-scripts/generate_docker_compose.sh
-    echo -e "\033[1;36m[Auto] Building and starting new PHP container: $SITE_NAME\033[0m"
-    docker-compose build $SITE_NAME
-    docker-compose up -d $SITE_NAME
+    echo -e "\033[1;36m[Auto] Generating database config...\033[0m"
+    ./bash-scripts/generate_database_config.sh --force
+    echo -e "\033[1;36m[Auto] Checking PHP container for version $PHP_VERSION...\033[0m"
+    # Get the PHP version for this site and check if container exists
+    PHP_CONTAINER="php-${PHP_VERSION//./}"
+    
+    # Save container name for future use
+    echo -e "\033[1;34m[Auto] PHP container name: $PHP_CONTAINER\033[0m"
+    echo -e "\033[1;34m[Auto] Project path inside container: /var/www/html/$SITE_NAME\033[0m"
+    
+    # Check if the container already exists
+    if docker-compose ps -q $PHP_CONTAINER | grep -q .; then
+        echo -e "\033[1;33m[Auto] PHP container $PHP_CONTAINER already exists. Skipping build.\033[0m"
+        # Just restart the container to pick up the new site
+        docker-compose restart $PHP_CONTAINER
+    else
+        echo -e "\033[1;36m[Auto] Building new PHP container: $PHP_CONTAINER\033[0m"
+        docker-compose build $PHP_CONTAINER
+        docker-compose up -d $PHP_CONTAINER
+    fi
     echo -e "\033[1;36m[Auto] Restarting nginx container to reload configs...\033[0m"
     docker-compose restart nginx
     echo -e "\033[1;36m[Auto] Initializing database for new site...\033[0m"
