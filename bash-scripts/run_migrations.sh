@@ -22,16 +22,22 @@ run_migrations() {
             return
         fi
 
-        # Get PHP container name for the selected site
-        PHP_CONTAINER=$(jq -r --arg SITE "$SELECTED_SITE" '.docker_settings.sites[] | select(.name==$SITE) | .name' ./config.json)
+        # Get PHP container name and project path for the selected site
+        PHP_CONTAINER=$(jq -r --arg SITE "$SELECTED_SITE" '.docker_settings.sites[] | select(.name==$SITE) | .php_container' ./config.json)
+        PROJECT_PATH=$(jq -r --arg SITE "$SELECTED_SITE" '.docker_settings.sites[] | select(.name==$SITE) | .project_path' ./config.json)
 
         if [ -z "$PHP_CONTAINER" ]; then
             echo -e "\n\033[1;31mPHP container not found for $SELECTED_SITE.\033[0m"
             return
         fi
 
-        echo -e "\n\033[1;34mRunning migrations for $SELECTED_SITE inside container: $PHP_CONTAINER...\033[0m"
-        docker exec -it "$PHP_CONTAINER" bash -c "php artisan migrate --force"
+        if [ -z "$PROJECT_PATH" ]; then
+            echo -e "\n\033[1;31mProject path not found for $SELECTED_SITE.\033[0m"
+            return
+        fi
+
+        echo -e "\n\033[1;34mRunning migrations for $SELECTED_SITE inside container: $PHP_CONTAINER at path: $PROJECT_PATH...\033[0m"
+        docker exec -it "$PHP_CONTAINER" bash -c "cd $PROJECT_PATH && php artisan migrate --force"
         echo -e "\033[1;32mMigrations completed for $SELECTED_SITE.\033[0m"
         read -p "Press Enter to continue..."
     done
