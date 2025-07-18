@@ -122,6 +122,8 @@ add_new_site() {
             cp .env.example .env
             php artisan key:generate
             cd - >/dev/null
+            # Update .env to use MySQL settings
+            ../bash-scripts/set_laravel_env_mysql.sh "$SITE_NAME"
             ;;
         "WordPress")
             wget https://wordpress.org/latest.tar.gz -P "$SITE_PATH"
