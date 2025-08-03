@@ -52,29 +52,29 @@ show_migration_menu() {
     echo -e "\033[1;36m====================================\033[0m"
     
     # Get all sites
-    local sites=$(get_laravel_sites)
+    local migration_sites=$(get_laravel_sites)
     
-    if [[ -z "$sites" ]]; then
+    if [[ -z "$migration_sites" ]]; then
         echo -e "\n\033[1;33mNo sites found in config.json\033[0m"
         read -p "Press Enter to return to the main menu..."
         return
     fi
     
     # Show sites with fzf, including back option and "All Sites" option
-    local selected_site=$(printf "Back to Main Menu\nAll Sites\n%s" "$sites" | fzf --height=15 --reverse --border --prompt "Select site to run migrations: ")
+    local migration_selected_site=$(printf "Back to Main Menu\nAll Sites\n%s" "$migration_sites" | fzf --height=15 --reverse --border --prompt "Select site to run migrations: ")
     
-    if [[ -z "$selected_site" ]]; then
+    if [[ -z "$migration_selected_site" ]]; then
         echo -e "\n\033[1;33mNo selection made. Returning to main menu.\033[0m"
         read -p "Press Enter to continue..."
         return
     fi
     
-    if [[ "$selected_site" == "Back to Main Menu" ]]; then
+    if [[ "$migration_selected_site" == "Back to Main Menu" ]]; then
         echo -e "\n\033[1;34mReturning to main menu...\033[0m"
         return
     fi
     
-    if [[ "$selected_site" == "All Sites" ]]; then
+    if [[ "$migration_selected_site" == "All Sites" ]]; then
         echo -e "\n\033[1;36mRunning migrations for all sites...\033[0m"
         local success_count=0
         local total_count=0
@@ -86,7 +86,7 @@ show_migration_menu() {
                     ((success_count++))
                 fi
             fi
-        done <<< "$sites"
+        done <<< "$migration_sites"
         
         echo -e "\n\033[1;36mMigration Summary:\033[0m"
         echo -e "\033[1;32m✓ Successful: $success_count\033[0m"
@@ -94,7 +94,7 @@ show_migration_menu() {
         echo -e "\033[1;34mTotal: $total_count\033[0m"
     else
         # Run migrations for selected site
-        run_migrations_for_site "$selected_site"
+        run_migrations_for_site "$migration_selected_site"
     fi
     
     read -p "Press Enter to return to the main menu..."

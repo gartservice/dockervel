@@ -73,9 +73,9 @@ show_permissions_menu() {
     echo -e "\033[1;36m====================================\033[0m"
     
     # Get all sites from config.json
-    local sites=$(jq -r '.docker_settings.sites[].name' "$CONFIG_FILE" 2>/dev/null)
+    local permission_sites=$(jq -r '.docker_settings.sites[].name' "$CONFIG_FILE" 2>/dev/null)
     
-    if [[ -z "$sites" ]]; then
+    if [[ -z "$permission_sites" ]]; then
         echo -e "\n\033[1;33mNo sites found in config.json.\033[0m"
         read -p "Press Enter to return to the main menu..."
         return
@@ -83,30 +83,30 @@ show_permissions_menu() {
     
     echo -e "\n\033[1;33mSelect a project to fix permissions:\033[0m"
     
-    local selected_site=$(printf "Back to Main Menu\nAll Laravel Projects\n%s" "$sites" | fzf --height=15 --reverse --border --prompt "Select project to fix permissions: ")
+    local permission_selected_site=$(printf "Back to Main Menu\nAll Laravel Projects\n%s" "$permission_sites" | fzf --height=15 --reverse --border --prompt "Select project to fix permissions: ")
     
-    if [[ -z "$selected_site" ]]; then
+    if [[ -z "$permission_selected_site" ]]; then
         echo -e "\n\033[1;33mNo selection made. Returning to main menu.\033[0m"
         return
     fi
     
-    if [[ "$selected_site" == "Back to Main Menu" ]]; then
+    if [[ "$permission_selected_site" == "Back to Main Menu" ]]; then
         echo -e "\n\033[1;34mReturning to main menu...\033[0m"
         return
     fi
     
-    if [[ "$selected_site" == "All Laravel Projects" ]]; then
+    if [[ "$permission_selected_site" == "All Laravel Projects" ]]; then
         echo -e "\n\033[1;36mFixing permissions for all Laravel projects...\033[0m"
         while IFS= read -r site_name; do
             local site_path="$SITES_FOLDER/$site_name"
             if [[ -d "$site_path" ]]; then
                 fix_laravel_permissions "$site_path" "$site_name"
             fi
-        done <<< "$sites"
+        done <<< "$permission_sites"
         echo -e "\n\033[1;32m✅ All Laravel projects processed!\033[0m"
     else
         # Construct the local project path using sites_folder and site name
-        local project_path="$SITES_FOLDER/$selected_site"
+        local project_path="$SITES_FOLDER/$permission_selected_site"
         
         if [[ ! -d "$project_path" ]]; then
             echo -e "\033[1;31mError: Project path '$project_path' does not exist!\033[0m"
@@ -114,7 +114,7 @@ show_permissions_menu() {
             return
         fi
         
-        fix_laravel_permissions "$project_path" "$selected_site"
+        fix_laravel_permissions "$project_path" "$permission_selected_site"
     fi
     
     read -p "Press Enter to return to the main menu..."

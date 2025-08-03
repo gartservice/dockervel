@@ -74,30 +74,30 @@ show_database_deletion_menu() {
     echo -e "\033[1;36m====================================\033[0m"
     
     # Get all sites
-    local sites=$(get_all_sites)
+    local db_sites=$(get_all_sites)
     
-    if [[ -z "$sites" ]]; then
+    if [[ -z "$db_sites" ]]; then
         echo -e "\n\033[1;33mNo sites found in config.json\033[0m"
         read -p "Press Enter to return to the main menu..."
         return
     fi
     
     # Show sites with fzf, including back option
-    local selected_site=$(printf "Back to Main Menu\n%s" "$sites" | fzf --height=15 --reverse --border --prompt "Select site to delete database: ")
+    local db_selected_site=$(printf "Back to Main Menu\n%s" "$db_sites" | fzf --height=15 --reverse --border --prompt "Select site to delete database: ")
     
-    if [[ -z "$selected_site" ]]; then
+    if [[ -z "$db_selected_site" ]]; then
         echo -e "\n\033[1;33mNo selection made. Returning to main menu.\033[0m"
         read -p "Press Enter to continue..."
         return
     fi
     
-    if [[ "$selected_site" == "Back to Main Menu" ]]; then
+    if [[ "$db_selected_site" == "Back to Main Menu" ]]; then
         echo -e "\n\033[1;34mReturning to main menu...\033[0m"
         return
     fi
     
     # Show site details before deletion
-    local site_details=$(get_site_details "$selected_site")
+    local site_details=$(get_site_details "$db_selected_site")
     if [[ -n "$site_details" ]]; then
         echo -e "\n\033[1;36m=== Site Details ===\033[0m"
         echo -e "Name: $(echo "$site_details" | jq -r '.name')"
@@ -107,7 +107,7 @@ show_database_deletion_menu() {
     fi
     
     # Delete the database for the selected site
-    delete_database "$selected_site"
+    delete_database "$db_selected_site"
     
     read -p "Press Enter to return to the main menu..."
 }

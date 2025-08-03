@@ -22,16 +22,16 @@ run_migrations() {
 }
 
 # Function to display the menu
-show_menu() {
-    options=("Initialize Database" "Run Migrations" "Exit")
+show_docker_manager_menu() {
+    local docker_options=("Initialize Database" "Run Migrations" "Exit")
     while true; do
         clear
         echo -e "\n\033[1;36m================================\033[0m"
         echo -e "\033[1;36m  Container Database Manager \033[0m"
         echo -e "\033[1;36m================================\033[0m"
         echo -e "\n\033[1;33mUse arrow keys to navigate and Enter to select:\033[0m"
-        choice=$(printf "%s\n" "${options[@]}" | fzf --height=10 --reverse --border)
-        case "$choice" in
+        local docker_choice=$(printf "%s\n" "${docker_options[@]}" | fzf --height=10 --reverse --border)
+        case "$docker_choice" in
             "Initialize Database") initialize_database; read -p "Press Enter to continue..." ;;
             "Run Migrations") run_migrations; read -p "Press Enter to continue..." ;;
             "Exit") exit 0 ;;
@@ -46,4 +46,4 @@ if ! command -v fzf &> /dev/null; then
 fi
 
 # Start interactive menu
-show_menu
+show_docker_manager_menu
