@@ -58,8 +58,8 @@ project-root/
 
 1. **Clone and Setup**:
    ```bash
-   git clone <your-repo>
-   cd <your-repo>
+   git clone https://github.com/gartservice/dockervel.git dockervel
+   cd dockervel
    chmod +x main.sh
    ```
 
