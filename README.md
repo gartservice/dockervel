@@ -127,41 +127,20 @@ Removes a site and all associated files.
    - Delete SSL certificates
    - Update configuration
 
-#### 3. Fix Laravel Permissions
-Fixes file and directory permissions for Laravel applications.
+#### 3. Manual Scripts & Debug Menu
+Access to scripts typically run automatically in the background. Use for manual execution, debugging, or testing.
 
-**Features**:
-- Sets correct ownership and group permissions
-- Makes `artisan` executable
-- Gives write access to `storage/` and `bootstrap/cache/`
-- Adds user to `www-data` group
+**Available Options**:
+- **Fix Laravel Permissions**: Fix file and directory permissions for Laravel applications
+- **Build Docker Containers**: Build all Docker containers defined in configuration
+- **Init Databases**: Initialize MySQL databases for all configured sites
+- **Run Migrations**: Execute Laravel migrations for selected sites
+- **Generate .env File**: Create `.env` file from `config.json` configuration
+- **Generate docker-compose file**: Create `docker-compose.yml` from configuration
+- **Generate nginx config files**: Create nginx configuration files for all sites
+- **Generate database_config.json**: Create database configuration for MySQL initialization
 
-#### 4. Build Docker Containers
-Builds all Docker containers defined in the configuration.
-
-**Process**:
-- Builds PHP containers for each version
-- Builds MySQL container
-- Builds nginx container
-- Sets up networks
-
-#### 5. Init Databases
-Initializes MySQL databases for all configured sites.
-
-**Process**:
-- Creates databases if they don't exist
-- Sets up users and permissions
-- Runs initialization scripts
-
-#### 6. Run Migrations
-Executes Laravel migrations for selected sites.
-
-**Features**:
-- Run migrations for single site or all sites
-- Automatic container detection
-- Error handling and reporting
-
-#### 7. Check Required Applications
+#### 4. Check Required Applications
 Verifies all required applications are installed.
 
 **Features**:
@@ -169,38 +148,22 @@ Verifies all required applications are installed.
 - Reports missing applications
 - Can install missing packages
 
-#### 8. Generate .env File
-Creates `.env` file from `config.json` configuration.
-
-**Generated Variables**:
-- MySQL container settings
-- Nginx configuration
-- Cloudflare settings
-- Site-specific database variables
-
-#### 9. Generate docker-compose file
-Creates `docker-compose.yml` from configuration.
-
-**Features**:
-- Multi-PHP version support
-- Site-specific environment variables
-- Volume mappings
-- Network configuration
-
-#### 10. Generate nginx config files
-Creates nginx configuration files for all sites.
-
-**Features**:
-- SSL/HTTPS support
-- PHP-FPM integration
-- Custom public folder support
-- Access and error logging
-
-#### 11. Generate config.json from template
+#### 5. Generate config.json from template
 Creates `config.json` from `config.base.json` template.
 
-#### 12. Generate database_config.json from config.json
-Creates database configuration for MySQL initialization.
+#### 6. Manage Laravel Aliases
+Manages useful Laravel, Ubuntu, and Docker command aliases in your `.bashrc` file.
+
+**Features**:
+- **Install Aliases**: Adds comprehensive aliases to `.bashrc`
+- **Preview Aliases**: Shows all available aliases before installation
+- **Remove Aliases**: Safely removes aliases with backup
+- **Reload .bashrc**: Automatically reloads configuration
+
+**Available Aliases**:
+- **Laravel**: `pa`, `pam`, `pat`, `pam:r`, `patest`, `paml`, `paoc`, `spaoc`, `palm`, `paqr`, `pamld`, `showlog`, `pads`, `ds`
+- **Ubuntu**: `cl`, `add.alias`, `sc`
+- **Docker**: `dcu-d`, `dcd`, `dl`, `dc`, `de-it`, `d`, `dps`, `dcs`
 
 ## ⚙️ Configuration
 
@@ -309,6 +272,12 @@ Builds Docker containers.
 #### `bash-scripts/docker_manager.sh`
 Docker container management utilities.
 
+#### `bash-scripts/add_laravel_aliases.sh`
+Manages Laravel, Ubuntu, and Docker command aliases in `.bashrc`.
+
+#### `bash-scripts/manual_scripts_menu.sh`
+Provides a submenu for manual script execution and debugging options.
+
 ## 🌐 Accessing Your Sites
 
 ### Local Development
@@ -369,6 +338,28 @@ docker exec -i mysql mysql -uroot -psecret my_db < backup.sql
 
 # Export database
 docker exec mysql mysqldump -uroot -psecret my_db > backup.sql
+```
+
+### Using Laravel Aliases
+After installing aliases via the main menu, you can use these shortcuts:
+
+```bash
+# Laravel commands
+pa          # php artisan
+pam         # php artisan migrate
+pat         # php artisan tinker
+paoc        # php artisan optimize:clear
+showlog     # tail -f storage/logs/laravel.log
+
+# Docker commands
+dcu-d       # docker-compose up -d
+dcd         # docker-compose down
+dps         # docker ps
+de-it       # docker exec -it
+
+# Ubuntu commands
+cl          # clear
+sc          # source ~/.bashrc
 ```
 
 ## 🛠️ Troubleshooting
