@@ -27,7 +27,7 @@ RUN apt-get update && apt-get install -y \
         opcache \
     && docker-php-source delete
 
-# Устанавливаем Composer
+# install composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 ARG APP_NAME

@@ -13,9 +13,13 @@ generate_nginx_confs() {
         SERVER_NAME=$(echo "$site" | jq -r '.server_name')
         ROOT=$(echo "$site" | jq -r '.root')
         PUBLIC_FOLDER=$(echo "$site" | jq -r '.public_folder // "public"')
+        PHP_VERSION=$(echo "$site" | jq -r '.php_version')
         SSL_ENABLED=$(echo "$site" | jq -r '.ssl.enabled // false')
         SSL_CERT=$(echo "$site" | jq -r '.ssl.cert // empty')
         SSL_KEY=$(echo "$site" | jq -r '.ssl.key // empty')
+
+        # Create PHP container name based on version
+        PHP_CONTAINER="php-${PHP_VERSION//./}"
 
         CONF_FILE="$NGINX_CONF_DIR/$NAME.conf"
 
@@ -53,18 +57,10 @@ EOF
     location / {
         try_files \$uri \$uri/ /index.php?\$query_string;
     }
-    
-    location /storage/ {
-        alias /var/www/html/$ROOT/storage/app/public/;
-
-        access_log off;
-        expires max;
-    }
-
 
     location ~ \.php\$ {
         include fastcgi_params;
-        fastcgi_pass $NAME:9000;
+        fastcgi_pass $PHP_CONTAINER:9000;
         fastcgi_param SCRIPT_FILENAME \$document_root\$fastcgi_script_name;
         fastcgi_param SERVER_NAME \$host;
     }
@@ -78,4 +74,7 @@ EOF
     done
 }
 
-
+# Execute function if script is run directly
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+    generate_nginx_confs "$@"
+fi

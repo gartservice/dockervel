@@ -3,10 +3,10 @@
 echo "Checking and creating databases if needed..."
 
 # Load the JSON file and parse it using jq
-CONFIG_FILE="/config.json"
+CONFIG_FILE="/database_config.json"
 
 # Read databases array from JSON and store it in a Bash array
-DATABASES=($(jq -r '.docker_settings.sites[].db_name' "$CONFIG_FILE"))
+DATABASES=($(jq -r '.[]' "$CONFIG_FILE"))
 
 DB_HOST="mysql"
 DB_USER="root"

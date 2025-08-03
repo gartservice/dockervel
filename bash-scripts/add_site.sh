@@ -122,6 +122,9 @@ add_new_site() {
             cp .env.example .env
             php artisan key:generate
             cd - >/dev/null
+            # Update .env to use MySQL settings
+            echo -e "\033[1;34m[Auto] Updating .env file with MySQL settings...\033[0m"
+            ./bash-scripts/set_laravel_env_mysql.sh "$SITE_NAME"
             ;;
         "WordPress")
             wget https://wordpress.org/latest.tar.gz -P "$SITE_PATH"
@@ -143,8 +146,86 @@ add_new_site() {
                     cp .env.example .env
                     php artisan key:generate
                     echo -e "\033[1;34mLaravel app key generated.\033[0m"
+                    cd - >/dev/null
+                    # Update .env to use MySQL settings for Laravel projects
+                    echo -e "\033[1;34m[Auto] Updating .env file with MySQL settings...\033[0m"
+                    ./bash-scripts/set_laravel_env_mysql.sh "$SITE_NAME"
+                elif [[ -f artisan ]]; then
+                    # Laravel project without .env.example, check if .env exists
+                    if [[ ! -f .env ]]; then
+                        echo -e "\033[1;34mCreating .env file for Laravel project...\033[0m"
+                        # Create a basic .env file with Laravel defaults
+                        cat > .env << 'EOF'
+APP_NAME=Laravel
+APP_ENV=local
+APP_KEY=
+APP_DEBUG=true
+APP_URL=http://localhost
+
+LOG_CHANNEL=stack
+LOG_DEPRECATIONS_CHANNEL=null
+LOG_LEVEL=debug
+
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=laravel
+DB_USERNAME=root
+DB_PASSWORD=
+
+BROADCAST_DRIVER=log
+CACHE_DRIVER=file
+FILESYSTEM_DISK=local
+QUEUE_CONNECTION=sync
+SESSION_DRIVER=file
+SESSION_LIFETIME=120
+
+MEMCACHED_HOST=127.0.0.1
+
+REDIS_HOST=127.0.0.1
+REDIS_PASSWORD=null
+REDIS_PORT=6379
+
+MAIL_MAILER=smtp
+MAIL_HOST=mailpit
+MAIL_PORT=1025
+MAIL_USERNAME=null
+MAIL_PASSWORD=null
+MAIL_ENCRYPTION=null
+MAIL_FROM_ADDRESS="hello@example.com"
+MAIL_FROM_NAME="${APP_NAME}"
+
+AWS_ACCESS_KEY_ID=
+AWS_SECRET_ACCESS_KEY=
+AWS_DEFAULT_REGION=us-east-1
+AWS_BUCKET=
+AWS_USE_PATH_STYLE_ENDPOINT=false
+
+PUSHER_APP_ID=
+PUSHER_APP_KEY=
+PUSHER_APP_SECRET=
+PUSHER_HOST=
+PUSHER_PORT=443
+PUSHER_SCHEME=https
+PUSHER_APP_CLUSTER=mt1
+
+VITE_APP_NAME="${APP_NAME}"
+VITE_PUSHER_APP_KEY="${PUSHER_APP_KEY}"
+VITE_PUSHER_HOST="${PUSHER_HOST}"
+VITE_PUSHER_PORT="${PUSHER_PORT}"
+VITE_PUSHER_SCHEME="${PUSHER_SCHEME}"
+VITE_PUSHER_APP_CLUSTER="${PUSHER_APP_CLUSTER}"
+EOF
+                    fi
+                    php artisan key:generate
+                    echo -e "\033[1;34mLaravel app key generated.\033[0m"
+                    cd - >/dev/null
+                    # Update .env to use MySQL settings for Laravel projects
+                    echo -e "\033[1;34m[Auto] Updating .env file with MySQL settings...\033[0m"
+                    ./bash-scripts/set_laravel_env_mysql.sh "$SITE_NAME"
+                else
+                    cd - >/dev/null
                 fi
-                cd - >/dev/null
             fi
             ;;
         *)
@@ -153,5 +234,82 @@ add_new_site() {
     esac
 
     echo -e "\n\033[1;34mSite $SITE_NAME added successfully!\033[0m"
+
+    # --- AUTOMATION STARTS HERE ---    
+    echo -e "\033[1;36m[Auto] Generating .env file...\033[0m"
+    ./bash-scripts/generate_env.sh --force
+    echo -e "\033[1;36m[Auto] Generating docker-compose.yml...\033[0m"
+    ./bash-scripts/generate_docker_compose.sh
+    echo -e "\033[1;36m[Auto] Generating nginx config files...\033[0m"
+    ./bash-scripts/generate_nginx_confs.sh
+    echo -e "\033[1;36m[Auto] Generating database config...\033[0m"
+    ./bash-scripts/generate_database_config.sh --force
+    echo -e "\033[1;36m[Auto] Checking PHP container for version $PHP_VERSION...\033[0m"
+    # Get the PHP version for this site and check if container exists
+    PHP_CONTAINER="php-${PHP_VERSION//./}"
+    
+    # Save container name for future use
+    echo -e "\033[1;34m[Auto] PHP container name: $PHP_CONTAINER\033[0m"
+    echo -e "\033[1;34m[Auto] Project path inside container: /var/www/html/$SITE_NAME\033[0m"
+    
+    # Check if the container already exists
+    if docker-compose ps -q $PHP_CONTAINER | grep -q .; then
+        echo -e "\033[1;33m[Auto] PHP container $PHP_CONTAINER already exists. Recreating to pick up new site...\033[0m"
+        # Recreate the container to pick up the new site volume mount
+        docker-compose down --remove-orphans
+        docker-compose up -d
+    else
+        echo -e "\033[1;36m[Auto] Building new PHP container: $PHP_CONTAINER\033[0m"
+        docker-compose build $PHP_CONTAINER
+        docker-compose up -d $PHP_CONTAINER
+    fi
+    
+    # Wait a moment for container to fully start
+    echo -e "\033[1;34m[Auto] Waiting for container to start...\033[0m"
+    sleep 5
+    
+    # Verify the site is mounted in the container
+    if docker exec $PHP_CONTAINER test -d "/var/www/html/$SITE_NAME"; then
+        echo -e "\033[1;32m[Auto] ✓ Site folder mounted successfully in container\033[0m"
+    else
+        echo -e "\033[1;31m[Auto] ✗ Error: Site folder not found in container. Trying to restart container again...\033[0m"
+        docker-compose restart $PHP_CONTAINER
+        sleep 3
+        if docker exec $PHP_CONTAINER test -d "/var/www/html/$SITE_NAME"; then
+            echo -e "\033[1;32m[Auto] ✓ Site folder now mounted after restart\033[0m"
+        else
+            echo -e "\033[1;31m[Auto] ✗ Error: Site folder still not mounted. Please check manually.\033[0m"
+        fi
+    fi
+    
+    echo -e "\033[1;36m[Auto] Nginx container will be recreated with new configs...\033[0m"
+    
+    echo -e "\033[1;36m[Auto] Initializing database for new site...\033[0m"
+    source ./bash-scripts/initialize_database.sh
+    initialize_database
+    echo -e "\033[1;32m[Auto] Database initialization complete.\033[0m"
+    
+    # Run database migrations for Laravel projects
+    if [[ "$INSTALL_TYPE" == "Laravel" ]] || ([[ "$INSTALL_TYPE" == "Existing Project (GitHub)" ]] && docker exec $PHP_CONTAINER test -f "/var/www/html/$SITE_NAME/artisan"); then
+        echo -e "\033[1;36m[Auto] Running database migrations for Laravel project...\033[0m"
+        if docker exec $PHP_CONTAINER php "/var/www/html/$SITE_NAME/artisan" migrate --force; then
+            echo -e "\033[1;32m[Auto] ✓ Database migrations completed successfully\033[0m"
+        else
+            echo -e "\033[1;33m[Auto] Warning: Database migrations failed. You may need to run them manually.\033[0m"
+            echo -e "\033[1;33m[Auto] Manual command: docker exec $PHP_CONTAINER php /var/www/html/$SITE_NAME/artisan migrate\033[0m"
+        fi
+    fi
+    
+    # Fix permissions for Laravel projects
+    if [[ "$INSTALL_TYPE" == "Laravel" ]] || ([[ "$INSTALL_TYPE" == "Existing Project (GitHub)" ]] && [[ -f "$SITE_PATH/artisan" ]]); then
+        echo -e "\033[1;36m[Auto] Fixing Laravel permissions...\033[0m"
+        if ./bash-scripts/fix_permissions.sh --site "$SITE_NAME" --path "$SITE_PATH"; then
+            echo -e "\033[1;32m[Auto] ✓ Permissions fixed successfully\033[0m"
+        else
+            echo -e "\033[1;33m[Auto] Warning: Permission fixing failed. You may need to fix them manually.\033[0m"
+        fi
+    fi
+    
+    echo -e "\033[1;32m[Auto] Done! New site is live (if no errors above).\033[0m"
     read -p "Press Enter to return to the main menu..."
 }
