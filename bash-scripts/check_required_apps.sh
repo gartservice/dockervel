@@ -31,7 +31,9 @@ install_cloudflared() {
     
     # Detect Ubuntu version
     local ubuntu_version=$(lsb_release -cs 2>/dev/null)
+    local ubuntu_version_number=$(lsb_release -rs 2>/dev/null | cut -d. -f1)
     
+    # Map Ubuntu versions to repository names
     case "$ubuntu_version" in
         "focal")
             local repo_name="focal"
@@ -43,13 +45,20 @@ install_cloudflared() {
             local repo_name="noble"
             ;;
         *)
-            echo -e "\033[1;31mError: Unsupported Ubuntu version: $ubuntu_version\033[0m"
-            echo -e "\033[1;33mPlease install cloudflared manually from: https://pkg.cloudflare.com/cloudflared\033[0m"
-            return 1
+            # For unsupported versions, try to use a compatible repository
+            if [[ "$ubuntu_version_number" -ge 20 && "$ubuntu_version_number" -le 24 ]]; then
+                echo -e "\033[1;33mWarning: Ubuntu version $ubuntu_version is not officially supported by Cloudflare\033[0m"
+                echo -e "\033[1;33mAttempting to use jammy (22.04) repository as fallback...\033[0m"
+                local repo_name="jammy"
+            else
+                echo -e "\033[1;31mError: Unsupported Ubuntu version: $ubuntu_version\033[0m"
+                echo -e "\033[1;33mPlease install cloudflared manually from: https://pkg.cloudflare.com/cloudflared\033[0m"
+                return 1
+            fi
             ;;
     esac
     
-    echo -e "\033[1;34mDetected Ubuntu version: $ubuntu_version ($repo_name)\033[0m"
+    echo -e "\033[1;34mDetected Ubuntu version: $ubuntu_version (using $repo_name repository)\033[0m"
     
     # Add cloudflare gpg key
     echo -e "\033[1;34mAdding Cloudflare GPG key...\033[0m"
@@ -69,6 +78,35 @@ install_cloudflared() {
         return 0
     else
         echo -e "\033[1;31m✗ Failed to install cloudflared\033[0m"
+        echo -e "\033[1;33mTrying alternative installation method...\033[0m"
+        
+        # Try alternative installation method for unsupported versions
+        if [[ "$ubuntu_version" != "focal" && "$ubuntu_version" != "jammy" && "$ubuntu_version" != "noble" ]]; then
+            echo -e "\033[1;34mAttempting direct download installation...\033[0m"
+            
+            # Download and install cloudflared directly
+            local temp_dir=$(mktemp -d)
+            cd "$temp_dir"
+            
+            # Download the latest version
+            curl -L https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64 -o cloudflared
+            
+            if [[ -f cloudflared ]]; then
+                sudo mv cloudflared /usr/local/bin/
+                sudo chmod +x /usr/local/bin/cloudflared
+                
+                if command -v cloudflared &> /dev/null; then
+                    echo -e "\033[1;32m✓ cloudflared installed successfully via direct download!\033[0m"
+                    cd - > /dev/null
+                    rm -rf "$temp_dir"
+                    return 0
+                fi
+            fi
+            
+            cd - > /dev/null
+            rm -rf "$temp_dir"
+        fi
+        
         return 1
     fi
 }
